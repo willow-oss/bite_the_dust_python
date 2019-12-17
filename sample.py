@@ -2,40 +2,47 @@
 """
 Created on Mon Dec 16 18:46:09 2019
 
-@author: Haru
+@author: willow-oss
 """
 
-from LoadTestData import TestData
-from LearningAlgos import ExtraTrees, GBDT_XGB
-from HypOptParams import ETOpt, XGBOpt
+from testdataloader import boston_df
+from learningalgos import extra_trees, gbdt_xgb, dnn
+from hypparamsopt import et_opt, xgb_opt
 from sklearn.model_selection import train_test_split
 
-b = TestData.boston_data_df()
-df = b.fetch_boston_df()
+def main():
 
-X = df.drop("PRICE", axis = 1)
-y = df["PRICE"]
+    b = boston_df.Boston_df()
+    df = b.fetch_boston_df()
+    
+    x = df.drop("PRICE", axis = 1)
+    y = df["PRICE"]
+    
+    tr_x, va_x, tr_y, va_y = train_test_split(x, y, train_size = 0.9)
+    """
+    #Extra Trees test mode
+    etr = extra_trees.ETReg()
+    base_params = etr.base_params
+    
+    eto = et_opt.ETRegOpt()
+    best_params = eto.fetch_best_params(tr_x, tr_y)
+    base_params.update(best_params)
+    
+    etr_best = extra_trees.ETReg(base_params)
+    etr_best.train_and_predict(tr_x, va_x, tr_y, va_y)
+    
+    
+    #xgboost test mode
+    xgbr = gbdt_xgb.XGBReg()
+    base_params = xgbr.base_params
+    
+    xgbo = xgb_opt.XGBRegOpt()
+    best_params = xgbo.fetch_best_params(tr_x, tr_y)
+    base_params.update(best_params)
+    xgbr_best = gbdt_xgb.XGBReg(base_params)
+    xgbr_best.train_and_predict(tr_x, va_x, tr_y, va_y, plot_learning_curve = True)
+    """
 
-tr_X, va_X, tr_y, va_y = train_test_split(X, y, train_size = 0.9)
 
-
-"""
-#Extra Trees test mode
-ETR = ExtraTrees.ETReg()
-base_params = ETR.base_params
-
-ETO = ETOpt.ETRegOpt()
-best_params = ETO.fetch_best_params(tr_X, va_X, tr_y, va_y)
-print(best_params)
-"""
-
-"""
-#xgboost test mode
-XGBR = GBDT_XGB.XGBReg()
-base_params = XGBR.base_params
-
-XGBO = XGBOpt.XGBRegOpt()
-best_params = XGBO.fetch_best_params(tr_X, va_X, tr_y, va_y)
-XGBR = GBDT_XGB.XGBReg(best_params)
-XGBR.train_and_predict(tr_X, va_X, tr_y, va_y, plot_bool = True)
-"""
+if __name__ == "__main__":
+    main()
