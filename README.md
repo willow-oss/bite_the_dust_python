@@ -2,11 +2,11 @@
 ====
 
 ## Overview
-Programs for machine learning written in Python, including test data loader, learning algorithms and hyper-parameter optimizers. We are expanding this package to add some new algorithms (e.g.: Neural Network, Recurrent Neural Network).
+Programs for machine learning written in Python, including test data loader, learning algorithms and hyper-parameter optimizers. We are expanding this package to add some new algorithms (e.g.: Neural Network, Recurrent Neural Network). We will mainly use pandas.DataFrame object as input.
 
 
 ## Description
-testdataloader - Testdataloader is a data set loader for machine learning and returns the data set you called as pandas.DataFrame object.
+testdataloader - Testdataloader is a data set loader for machine learning and returns datasets as pandas.DataFrame object.
 
 learningalgos - Learningalgos includes several algorithms for machine learning.
 
