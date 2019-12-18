@@ -24,7 +24,7 @@ class XGBReg():
         self.num_round = num_round
         self.base_params.update(params)
     
-    def train_and_predict(self, tr_x, va_x, tr_y, va_y, plot_learning_curve = False):
+    def train_and_evaluate(self, tr_x, va_x, tr_y, va_y, plot_learning_curve = False):
         dtrain = xgb.DMatrix(tr_x, label = tr_y)
         dvalid = xgb.DMatrix(va_x, label = va_y)
         watchlist = [(dtrain, "train"), (dvalid, "eval")]

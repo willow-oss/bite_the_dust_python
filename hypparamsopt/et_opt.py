@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 
 class ETRegOpt():
     
-    def __init__(self, shuffle = True):
+    def __init__(self, params_space = {}, shuffle = True):
         self.base_params = {"n_estimators":1000,
                                    "criterion":'mae',
                                    "max_features":'auto',
@@ -22,20 +22,23 @@ class ETRegOpt():
                                    "min_samples_leaf":1,
                                    "min_weight_fraction_leaf":0,
                                    "max_leaf_nodes":None}
+
+        self.params_space = params_space
         self.shuffle = shuffle
         
     def _objective(self, x, y, trial):
-        self.params_space = {"max_features" : trial.suggest_categorical("max_features", ["auto", "sqrt", "log2"]),
-                             "max_depth" : trial.suggest_int("max_depth", 3, 9),
-                             "bootstrap" : trial.suggest_categorical("bootstrap", [True, False]),
-                             "min_samples_split": trial.suggest_int("min_samples_split", 2, 5),
-                             "min_samples_leaf": trial.suggest_int("min_samples_leaf", 1, 5),
-                             "min_weight_fraction_leaf": trial.suggest_uniform("min_weight_fraction_leaf", 0, 0.3)
-                             }
+        self.base_params_space = {"max_features" : trial.suggest_categorical("max_features", ["auto", "sqrt", "log2"]),
+                     "max_depth" : trial.suggest_int("max_depth", 3, 9),
+                     "bootstrap" : trial.suggest_categorical("bootstrap", [True, False]),
+                     "min_samples_split": trial.suggest_int("min_samples_split", 2, 5),
+                     "min_samples_leaf": trial.suggest_int("min_samples_leaf", 1, 5),
+                     "min_weight_fraction_leaf": trial.suggest_uniform("min_weight_fraction_leaf", 0, 0.3)
+                     }
+        self.base_params_space.update(self.params_space)
         self.base_params.update(self.params_space)
         model = extra_trees.ETReg(self.base_params)
         tr_x, va_x, tr_y, va_y = train_test_split(x, y, train_size = 0.9, shuffle = self.shuffle)
-        model, score = model.train_and_predict(tr_x, va_x, tr_y, va_y)
+        model, score = model.train_and_evaluate(tr_x, va_x, tr_y, va_y)
         return - score
     
     def fetch_best_params(self, tr_x, tr_y):

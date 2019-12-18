@@ -6,7 +6,7 @@ Created on Mon Dec 16 18:46:09 2019
 """
 
 from testdataloader import boston_df
-from learningalgos import extra_trees, gbdt_xgb, dnn
+from learningalgos import extra_trees, gbdt_xgb, neural_net
 from hypparamsopt import et_opt, xgb_opt
 from sklearn.model_selection import train_test_split
 
@@ -42,6 +42,16 @@ def main():
     xgbr_best = gbdt_xgb.XGBReg(base_params)
     xgbr_best.train_and_predict(tr_x, va_x, tr_y, va_y, plot_learning_curve = True)
     """
+    """
+    #MLP test mode
+    mlpr = neural_net.MLPReg()
+    mlpr.train_and_evaluate(tr_x, va_x, tr_y, va_y)
+    """
+    
+    #RNN test mode
+    rnnr = neural_net.RNNReg()
+    rnnr.train_and_evaluate(tr_x, va_x, tr_y, va_y)
+    
 
 
 if __name__ == "__main__":

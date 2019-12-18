@@ -21,7 +21,7 @@ class ETReg():
                                    "max_leaf_nodes":None}
         self.base_params.update(params)
     
-    def train_and_predict(self, tr_x, va_x, tr_y, va_y):
+    def train_and_evaluate(self, tr_x, va_x, tr_y, va_y):
         model = ExtraTreesRegressor(**self.base_params)
         model.fit(tr_x, tr_y)
         pred_y = model.predict(va_x)
