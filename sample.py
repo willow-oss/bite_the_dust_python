@@ -6,7 +6,7 @@ Created on Mon Dec 16 18:46:09 2019
 """
 
 from testdataloader import boston_df
-from learningalgos import extra_trees, gbdt_xgb, neural_net
+from learningalgos import extra_trees, gbdt_xgb, neural_net, gaussian_process
 from hypparamsopt import et_opt, xgb_opt
 from sklearn.model_selection import train_test_split
 
@@ -48,10 +48,11 @@ def main():
     mlpr.train_and_evaluate(tr_x, va_x, tr_y, va_y)
     """
     
-    #RNN test mode
-    rnnr = neural_net.RNNReg()
-    rnnr.train_and_evaluate(tr_x, va_x, tr_y, va_y)
     
+    #gaussian process test mode
+    gpyr = gaussian_process.GPReg()
+    gpyr.train_and_evaluate(tr_x, va_x, tr_y, va_y) 
+        
 
 
 if __name__ == "__main__":
