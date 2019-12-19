@@ -21,6 +21,7 @@ We have 'samples.py' in the same repository to demonstrate the whole process fro
 pandas
 xgboost
 sklearn
+GPy
 functools
 optuna
 
