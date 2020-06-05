@@ -24,10 +24,11 @@ class MLPReg(Algo_Base):
                 "batch_size" : 64,
                 "input_dropout" : 0,
                 "hidden_dropout" : 0,
-                "learning_rate" : 0.001
+                "learning_rate" : 0.001,
+                "epochs" : 1000
                 }
     
-    def train(self, tr_x, tr_y):
+    def train(self, tr_x, tr_y, va_x, va_y, plot_learning_curve = False):
         input_dim = 1 if np.ndim(tr_x) == 1 else tr_x.shape[1]
         output_dim = 1 if np.ndim(tr_y) == 1 else tr_y.shape[1]
         input_dropout =  self.base_params["input_dropout"]
@@ -36,6 +37,7 @@ class MLPReg(Algo_Base):
         hidden_dropout =  self.base_params["hidden_dropout"]
         batch_size = self.base_params["batch_size"]
         learning_rate = self.base_params["learning_rate"]
+        epochs = self.base_params["epochs"]
         
         self.model = Sequential()
         self.model.add(Dense(input_dim=input_dim, output_dim=hidden_neurons))
@@ -50,9 +52,20 @@ class MLPReg(Algo_Base):
         self.model.add(Dense(input_dim=hidden_neurons, output_dim=output_dim))
         self.model.add(Activation("linear"))
         optimizer = Adam(lr=learning_rate)
+        es_cb = EarlyStopping(monitor = "val_loss", patience = int(epochs/100), verbose = 0, mode = "auto")
         
         self.model.compile(loss="mean_squared_error", optimizer=optimizer)
-        self.model.fit(tr_x, tr_y, nb_epoch=1000, batch_size=batch_size)
+        fit = self.model.fit(tr_x, tr_y, validation_data = (va_x, va_y), nb_epoch=epochs, batch_size=batch_size, callbacks = [es_cb])
+        if plot_learning_curve:
+            fig, ax = plt.subplots(figsize=(10,4))
+    
+            # Plot the loss in the history
+            ax.plot(fit.history['loss'],label="loss for training")
+            ax.plot(fit.history['val_loss'],label="loss for validation")
+            ax.set_title('model loss')
+            ax.set_xlabel('epoch')
+            ax.set_ylabel('loss')
+            ax.legend(loc='upper right')
 
     def predict(self, va_x):
         pred_y_array = self.model.predict(va_x)
@@ -61,19 +74,19 @@ class MLPReg(Algo_Base):
             pred_y.extend(s)        
         return pred_y
         
-    def train_and_evaluate(self, tr_x, va_x, tr_y, va_y, 
+    def train_and_evaluate(self, tr_x, va_x, te_x, tr_y, va_y, te_y,
                            plot_learning_curve = False, 
                            plot_validation_scatter = False):
-        self.train(tr_x, tr_y)
-        pred_y = self.predict(va_x)
-        score = r2_score(va_y, pred_y)
+        self.train(tr_x, tr_y, va_x, va_y, plot_learning_curve)
+        pred_y = self.predict(te_x)
+        score = r2_score(te_y, pred_y)
         print("R-squared on validation data is " + '{:.2g}'.format(score))
         if plot_validation_scatter :
-            self.plot_result(va_y, pred_y)   
+            self.plot_result(te_y, pred_y)   
         return self.model, score
         
 
-
+"""
 class RNNReg(Algo_Base):
     def __init__(self, params = {}, model_type = "SimpleRNN"):
         self.base_params = {
@@ -117,9 +130,18 @@ class RNNReg(Algo_Base):
         
         self.model = Sequential()
         
-        self.model.add(SimpleRNN(hidden_neurons, 
-                            input_shape = (self.length_of_sequence, self.input_dim),
-                            return_sequences = False))
+        if self.model_type == "SimpleRNN":
+            self.model.add(SimpleRNN(hidden_neurons, 
+                                input_shape = (self.length_of_sequence, self.input_dim),
+                                return_sequences = False))
+        elif self.model_type == "LSTM":
+            self.model.add(LSTM(hidden_neurons, 
+                                input_shape = (self.length_of_sequence, self.input_dim),
+                                return_sequences = False))
+        elif self.model_type == "GRU":
+            self.model.add(GRU(hidden_neurons, 
+                                input_shape = (self.length_of_sequence, self.input_dim),
+                                return_sequences = False))
                     
         self.model.add(Dense(output_dim=self.output_dim))
         
@@ -156,3 +178,4 @@ class RNNReg(Algo_Base):
         if plot_validation_scatter :
             self.plot_result(va_y_result, pred_y)
         return self.model, score    
+"""
